@@ -1,0 +1,199 @@
+﻿
+<html>
+<head>
+<meta charset="utf-8">
+    <title></title>
+    <link href="~/Css/Index.css" rel="stylesheet" />
+    <link href="~/Css/loginstyle.css" rel="stylesheet" />
+<script src="~/Scripts/jquery-3.1.1.js"></script>
+<script src="~/Scripts/jquery-3.1.1.min.js"></script>
+    <style>
+        body {
+            background: url(../assets/img/backgrounds/1.jpg) no-repeat;
+            background-size: cover;
+            font-family: 'PT Sans', Helvetica, Arial, sans-serif;
+            text-align: center;
+            color: #fff;
+        } 
+         .Login2 {
+        position:absolute;
+        left:590px;
+        top:400px;
+        }
+        .Login3 {
+            position: absolute;
+            left: 650px;
+            top: 400px;
+        }
+        .user {
+            position: absolute;
+            left: 600px;
+            top: 400px;
+        }
+        .admin {
+            position: absolute;
+            left: 660px;
+            top: 400px;
+        }
+        #search_button {
+        width:100px; font-size:larger; font-weight:700; color:white;position:relative;left:50px; padding-left:20px; height:40px;background-color:darkgray;top:5px;border-radius:10px
+        }
+        #search_button:hover {
+         background-color:darkcyan;
+         transition-property:all;
+         transition-duration:0.5s;
+         transition-delay:0s;
+        }
+        .readblog {
+        background-color:darkcyan;cursor:pointer;border:none
+        }
+            .readblog:hover {
+         background-color:yellow;
+         transition-property:all;
+         transition-duration:0.5s;
+         transition-delay:0s;
+            }
+    </style>
+        <script>
+            $(document).ready(function () {
+                $("#container").hide();
+               // $(".page-container").hide();
+                //alert('@ViewBag.username');
+                if ('@ViewBag.username' != "") {
+                    $("#nav_login").text("Log OUt");
+                    $("#nav_username").text('@ViewBag.username');
+                } else {
+                    $("#nav_login").text("Login");
+                    $("#nav_username").text("No LOgin"); 
+                }
+
+              /*  $("#remember-me").checked(function () {
+                    $("#checkedtext").text("admin");
+                })*/
+                $("#nav_login").click(function () {
+                   
+                    $("#container").toggle("1000");
+
+                });
+                $("#register").click(function () {
+
+                    $(".page-container").toggle("1000");
+                });
+                $("#search_button").click(function () {
+                    window.location.href = "/Blog/SearchBlog/1?name=" + $("#search").val();
+                });
+
+            });
+        </script>
+</head>
+<body >
+
+    <div id="container">
+            @using (@Html.BeginForm("Index", "Home", new { ReturnUrl = Request.QueryString["ReturnUrl"] }, FormMethod.Post))
+            {
+            <div class="login">LOGIN</div>
+            <div class="username-text">Username:</div>
+            <div class="password-text">Password:</div>
+            <div class="username-field">
+                <input type="text" name="username" value="" />
+            </div>
+            <div class="password-field">
+                <input type="password" name="password" value="" />
+            </div>
+                 <input class="Login2" id="Radio1" type="radio" name="group1" value="a" checked="checked" />
+                 <p class="user">User</p>
+                 <input class="Login3" id="Radio2" type="radio" name="group1" value="b" />
+                 <p class="admin">Admin</p>
+            <input type="submit" id="submit" name="submit" value="GO" />
+            }
+    </div>
+        <input id="search" type="text"  placeholder="" />
+        <input id="search_button"  value="search" />
+	 <div class="navbar" style="background-color:white" id="tmNavbar">   
+        <a href="#" class="title">Blog</a>        
+                            <ul class="navbar-nav">
+                                <li class="nav-item">
+                                    <a href="index.html" class="nav-link">Home</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="/Home/Register" class="nav-register">Register</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#" id="nav_login" class="nav-link">Login</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="blog.html" class="nav-link">Blog</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="contact.html" class="nav-link">Contact</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="contact.html" id="nav_username" class="nav-link">Username:</a>
+                                </li>
+                            </ul>                        
+    </div>      
+    <div class="showpic" style="background-image:url(/assets/1F504105945-5.jpg); background-size:100%">
+
+    </div> 
+
+
+    <div class="information">
+            <h2 class="words1" >热门博客推荐</h2>
+            <h2 class="words2">热门博客推荐,与你分享最新资讯</h2>
+
+    </div>   
+    
+    <div class="hotblog">
+        <div class="bcontainer">
+            @{
+                
+                WebBlogSystem.Models.Blog b1 = (((List<WebBlogSystem.Models.Blog>)ViewBag.bloglist).ElementAt(0));
+                WebBlogSystem.Models.Blog b2 = (((List<WebBlogSystem.Models.Blog>)ViewBag.bloglist).ElementAt(1));
+                WebBlogSystem.Models.Blog b3 = (((List<WebBlogSystem.Models.Blog>)ViewBag.bloglist).ElementAt(2));
+                WebBlogSystem.Models.Blog b4 = (((List<WebBlogSystem.Models.Blog>)ViewBag.bloglist).ElementAt(3));
+                WebBlogSystem.Security.MemberShip member = new WebBlogSystem.Security.MemberShip();
+             }
+        <div class="bloginf">
+            <div><img src="@{@member.GetUserImage(member.getUserNameById(b1.userid))}" class="blogimg" /></div>
+            <div><h2 class="blogname">@b1.title</h2></div> 
+            <div> <h2 class="simpleblog">关于计算机</h2></div> 
+            <div><button class="readblog" onclick="javascript:window.location.href='/Blog/Index/@b1.blogid'">Read</button></div> 
+        </div>
+        <div class="bloginf">
+            <div><img src="@{@member.GetUserImage(member.getUserNameById(b2.userid))}" class="blogimg" /></div>
+            <div><h2 class="blogname">@b2.title</h2></div> 
+            <div> <h2 class="simpleblog">计算机的历史发展</h2></div> 
+            <div><button class="readblog" onclick="javascript:window.location.href='/Blog/Index/@b2.blogid'">Read</button></div> 
+        </div>
+        <div class="bloginf">
+            <div><img src="@{@member.GetUserImage(member.getUserNameById(b3.userid))}" class="blogimg" /></div>
+            <div><h2 class="blogname">@b3.title</h2></div> 
+            <div> <h2 class="simpleblog">网站教学</h2></div> 
+            <div><button class="readblog" onclick="javascript:window.location.href='/Blog/Index/@b3.blogid'">Read</button></div> 
+        </div>
+        <div class="bloginf">
+            <div><img src="@{@member.GetUserImage(member.getUserNameById(b4.userid))}" class="blogimg" /></div>
+            <div><h2 class="blogname">@b4.title</h2></div> 
+            <div> <h2 class="simpleblog">图像处理</h2></div> 
+            <div><button class="readblog" onclick="javascript:window.location.href='/Blog/Index/@b4.blogid'">Read</button></div> 
+        </div>
+
+        </div>
+    </div> 
+    
+    
+    <div class="opacity">
+       
+    </div>
+            
+    <div class="newblog">
+
+
+    </div>  
+    <div >
+
+
+
+    </div>   
+</body>
+</html>

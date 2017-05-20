@@ -1,0 +1,195 @@
+﻿@model WebBlogSystem.Models.Blog
+@using System.Web.Security;
+<html>
+    <head>
+        <title>博文题目</title>
+
+     <script charset="utf-8" src="/editor/kindeditor.js"></script>
+        <script charset="utf-8" src="/editor/lang/zh_CN.js"></script>
+        <script src="~/Scripts/jquery-1.8.2.js" type="text/javascript"></script>
+        <script src="~/Scripts/jquery-1.8.3.js" type="text/javascript"></script>
+        <script src="~/Scripts/jquery-ui-1.8.24.js" type="text/javascript"></script>
+        <link href="~/Css/ReadBlog.css" rel="stylesheet" />
+        <script> 
+            var q = 0;
+            var editor;
+            var forbiddenArray = ['TMD', '黄色', 'FUCK'];
+            //       var str = "my javascript is very poor,who can help me?";
+
+            var replacements = {
+                "TMD": "<span style='background-color:#E53333;'><u>FUCK</u></span>"
+                , "黄色": "<span style='background-color:#E53333;'><u>黄色</u></span>"
+                , "FUCK": "<span style='background-color:#E53333;'><u>FUCK</u></span>"
+            };
+
+
+            Array.prototype.each = function (trans) {
+                for (var i = 0; i < this.length; i++)
+                    this[i] = trans(this[i], i, this);
+                return this;
+            };
+            Array.prototype.map = function (trans) {
+                return [].concat(this).each(trans);
+            };
+            RegExp.escape = function (str) {
+                return new String(str).replace(/([.*+?^=!:${}()|[\]\/\\])/g, '\\$1');
+            };
+            function properties(obj) {
+                var props = [];
+                for (var p in obj) props.push(p);
+                return props;
+            }
+            // -------------------------------------------
+            KindEditor.ready(function (K) {
+                editor = K.create('textarea[name="content"]', {
+                    resizeType: 1,
+                    allowPreviewEmoticons: false,
+                    allowImageUpload: false,
+                    resizeType: 0,
+                    afterChange: function () {
+                        $("#button").hide();
+                        $("#panduan").show();
+
+
+                    },
+                    items: ["source", "|", "undo", "redo", "|", "preview", "print", "template", "code", "cut", "copy", "paste", "plainpaste", "wordpaste", "|", "justifyleft", "justifycenter", "justifyright", "justifyfull", "insertorderedlist", "insertunorderedlist", "indent", "outdent", "subscript", "superscript", "clearhtml", "quickformat", "selectall", "|", "fullscreen", "/", "formatblock", "fontname", "fontsize", "|", "forecolor", "hilitecolor", "bold", "italic", "underline", "strikethrough", "lineheight", "removeformat", "|", "image", "flash", "media", "insertfile", "table", "hr", "emoticons", "baidumap", "pagebreak", "anchor", "link", "unlink", "about", "|"]
+                });
+
+                $(function () {
+                    $("#file1").on("change", function () {
+                        var file = this.files[0];
+                        if (this.files && file) {
+                            var reader = new FileReader();
+                            reader.onload = function (e) {
+                                $('#img1').attr('src', e.target.result);
+                                editor.appendHtml("<img src='" + e.target.result + "'/>");
+
+
+                            }
+                            reader.readAsDataURL(file);
+                        }
+
+                    });
+
+                });
+
+            });
+
+            $(document).ready(function () {
+                $("#button").hide();
+                $("#panduan").click(function () {
+                    editor.sync();
+                    var abc = document.getElementById('addeditor_id').value;
+                    if (forbiddenStr(abc)) {
+                        q = 0;
+                    }
+                    else {
+                        alert("有敏感词汇");
+                        var regex = new RegExp(properties(replacements).map(RegExp.escape).join("|"), "g");
+                        abc = abc.replace(regex, function ($0) { return replacements[$0]; });
+                        editor.html(abc);
+                        q = 1;
+
+                    }
+                    if (q == 0) {
+                        $("#button").show();
+                        $("#panduan").hide();
+                    }
+
+                });
+
+                $("#button").click(function () {
+
+                    alert($("#category").val() + $("*[name='authority']").val());
+                    $.ajax({
+                        type: 'POST',
+                        url: "/Blog/updateblog",
+                        data: { title: $("#title").val(), content: document.getElementById('addeditor_id').value, category: $("#category").val(), authority: $("*[name='authority']").val(), blogid: '@Model.blogid' },
+                        datatype: "json",
+                        success: function (data) {
+                            if (data == "true") {
+                                alert("修改成功");
+                                window.location.reload();
+                            }
+                            if (data == "false") {
+                                alert("失败");
+                            }
+                        },
+                        error: function () {
+                            alert("出错");
+                        }
+                    });
+
+
+                });
+
+            });
+
+
+            function forbiddenStr(str) {
+                //        var destString = trim(str);
+                var re = '';
+
+                for (var i = 0; i < forbiddenArray.length; i++) {
+                    if (i == forbiddenArray.length - 1)
+                        re += forbiddenArray[i];
+                    else
+                        re += forbiddenArray[i] + "|";
+                }
+                var pattern = new RegExp(re, "g");
+                if (pattern.test(str)) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+            function save() {
+                //取得HTML内容?
+                //同步数据后可以直接取得textarea的value?
+                editor.sync();
+                html = document.getElementById('addeditor_id').value;//原生API
+                $("#schtmlnr").val(html);//把KindEditor产生的html代码放到schtmlnr里面，用于提交
+
+                // alert($("#schtmlnr").val());
+            }
+
+        </script>
+    </head>
+    <body>
+        @{ WebBlogSystem.Security.MemberShip member = new WebBlogSystem.Security.MemberShip();
+            }
+        <div class="overlay"></div>
+        <div class="page">
+        <div class="page-title image-light">
+				<img src="@{@(member.GetUserImage(member.getUserNameById(Model.userid)))}" style="border-radius:50%; -webkit-animation: downloadButton 2.5s infinite;
+            animation: downloadButton 2.5s infinite;
+            -webkit-transition: none;
+            transition: none"/>
+                <h2 id="blogername" onclick="javascript:window.location.href='/Home/UserInfo/?name=@ViewBag.username'" >@ViewBag.username</h2>
+				<span>@Model.updatetime</span>
+        <input id="title" type="text" value="@Model.title" placeholder="标题" />
+			</div>   
+        </div>
+        
+           
+        <div class="content">
+            <input id="file1" type="file" />
+            <div class="content_blog">
+                    <textarea id="addeditor_id" name="content" style="width:100%;height:300px;">@Server.HtmlDecode(Model.content)</textarea>
+                 </div>
+         </div>
+        &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp 
+        权限设置：
+        <input class="anthor" type="radio" name="authority" value="所有人可见" checked="checked"/>所有人可见
+        <input class="anthor" type="radio" name="authority" value="自己可见"/>自己可见
+        <select class="select" id="category"> 
+        <option value="军事">军事</option> 
+        <option value="旅游">旅游</option> 
+        <option value="情感">情感</option> 
+        <option value="科技">科技</option> 
+        <option value="IT">IT</option> 
+        </select> 
+        <input id="panduan" class="submit" type="button" value="敏感词判断" /> 
+       <input type="button" class="submit" value="提交" id="button" onclick="save()" />
+    </body>
+</html>

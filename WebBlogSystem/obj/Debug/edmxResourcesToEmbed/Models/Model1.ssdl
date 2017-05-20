@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="BlogSystemModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityContainer Name="BlogSystemModelStoreContainer">
+    <EntitySet Name="Admin" EntityType="BlogSystemModel.Store.Admin" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Blog" EntityType="BlogSystemModel.Store.Blog" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Chat" EntityType="BlogSystemModel.Store.Chat" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Collect" EntityType="BlogSystemModel.Store.Collect" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Evaluation" EntityType="BlogSystemModel.Store.Evaluation" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Focus" EntityType="BlogSystemModel.Store.Focus" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="GiveGood" EntityType="BlogSystemModel.Store.GiveGood" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="LeaveMessage" EntityType="BlogSystemModel.Store.LeaveMessage" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Notice" EntityType="BlogSystemModel.Store.Notice" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="RecommandBlog" EntityType="BlogSystemModel.Store.RecommandBlog" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="User" EntityType="BlogSystemModel.Store.User" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="UserCategory" EntityType="BlogSystemModel.Store.UserCategory" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="UserMessage" EntityType="BlogSystemModel.Store.UserMessage" store:Type="Tables" Schema="dbo" />
+  </EntityContainer>
+  <EntityType Name="Admin">
+    <Key>
+      <PropertyRef Name="adminid" />
+    </Key>
+    <Property Name="adminid" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="name" Type="nchar" Nullable="false" MaxLength="20" />
+    <Property Name="password" Type="nchar" Nullable="false" MaxLength="20" />
+  </EntityType>
+  <EntityType Name="Blog">
+    <Key>
+      <PropertyRef Name="blogid" />
+    </Key>
+    <Property Name="blogid" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="userid" Type="int" Nullable="false" />
+    <Property Name="title" Type="nchar" Nullable="false" MaxLength="20" />
+    <Property Name="content" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="updatetime" Type="datetime" Nullable="false" />
+    <Property Name="category" Type="nchar" Nullable="false" MaxLength="20" />
+    <Property Name="authority" Type="nchar" Nullable="false" MaxLength="20" />
+    <Property Name="costnum" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Chat">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="userid1" Type="int" Nullable="false" />
+    <Property Name="userid2" Type="int" Nullable="false" />
+    <Property Name="content" Type="nchar" Nullable="false" MaxLength="20" />
+    <Property Name="time" Type="datetime" Nullable="false" />
+    <Property Name="isread" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Collect">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="userid" Type="int" Nullable="false" />
+    <Property Name="blogid" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Evaluation">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="userid" Type="int" Nullable="false" />
+    <Property Name="blogid" Type="int" Nullable="false" />
+    <Property Name="time" Type="datetime" Nullable="false" />
+    <Property Name="isreaded" Type="int" Nullable="false" />
+    <Property Name="content" Type="nchar" Nullable="false" MaxLength="30" />
+  </EntityType>
+  <EntityType Name="Focus">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="userid1" Type="int" Nullable="false" />
+    <Property Name="userid2" Type="int" Nullable="false" />
+    <Property Name="anothername" Type="nchar" MaxLength="20" />
+  </EntityType>
+  <EntityType Name="GiveGood">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="userid" Type="int" />
+    <Property Name="blogid" Type="int" />
+    <Property Name="time" Type="datetime" />
+  </EntityType>
+  <EntityType Name="LeaveMessage">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="userid1" Type="int" Nullable="false" />
+    <Property Name="userid2" Type="int" Nullable="false" />
+    <Property Name="content" Type="nchar" Nullable="false" MaxLength="50" />
+    <Property Name="time" Type="datetime" Nullable="false" />
+    <Property Name="isreaded" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Notice">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="userid" Type="int" Nullable="false" />
+    <Property Name="content" Type="nchar" Nullable="false" MaxLength="50" />
+    <Property Name="time" Type="datetime" Nullable="false" />
+  </EntityType>
+  <EntityType Name="RecommandBlog">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="adminid" Type="int" Nullable="false" />
+    <Property Name="blogid" Type="int" Nullable="false" />
+    <Property Name="time" Type="datetime" Nullable="false" />
+  </EntityType>
+  <EntityType Name="User">
+    <Key>
+      <PropertyRef Name="userid" />
+    </Key>
+    <Property Name="userid" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="name" Type="nchar" Nullable="false" MaxLength="20" />
+    <Property Name="password" Type="nchar" Nullable="false" MaxLength="20" />
+    <Property Name="paypassword" Type="nchar" Nullable="false" MaxLength="20" />
+    <Property Name="email" Type="nchar" MaxLength="20" />
+    <Property Name="phone" Type="nchar" Nullable="false" MaxLength="20" />
+    <Property Name="tip" Type="nchar" Nullable="false" MaxLength="20" />
+    <Property Name="instruction" Type="nchar" MaxLength="20" />
+    <Property Name="balance" Type="float" Nullable="false" />
+    <Property Name="image" Type="nvarchar(max)" />
+  </EntityType>
+  <EntityType Name="UserCategory">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="userid" Type="int" Nullable="false" />
+    <Property Name="categoryname" Type="nchar" Nullable="false" MaxLength="20" />
+  </EntityType>
+  <EntityType Name="UserMessage">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="userid" Type="int" Nullable="false" />
+    <Property Name="message" Type="nchar" Nullable="false" MaxLength="20" />
+    <Property Name="time" Type="datetime" Nullable="false" />
+  </EntityType>
+</Schema>

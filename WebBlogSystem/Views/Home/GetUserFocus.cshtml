@@ -1,0 +1,226 @@
+﻿
+<html>
+    <head>
+        <title>你的名字</title>
+        <link href="~/Css/UserFocus.css" rel="stylesheet" />     
+         <script src="~/Scripts/jquery-3.1.1.js"></script>
+        <script src="~/Scripts/jquery-3.1.1.min.js"></script>  
+        <style>
+            
+            .writenotice {
+            cursor:pointer;
+            position:absolute;
+            left:100px;
+            top:150px;
+            color:white;
+                    transition-delay:0s;
+                    transition-duration:0.5s;
+                    transition-property:all;
+            }
+                .writenotice:hover {
+                    color:gray;
+                    transition-delay:0s;
+                    transition-duration:0.5s;
+                    transition-property:all;
+                }
+        </style>  
+<script type="text/javascript" >
+    $(document).ready(function () {
+        $("#btn_center").click(function () {
+            popCenterWindow();
+        });
+
+        $("#close").click(function () {
+            closeWindow();
+        });
+
+        $(".writenotice").click(function () {
+            popCenterWindow();
+            $("#submitleavemessage").text("添加公告");
+        });
+        $("#submitleavemessage").click(function () {
+            if ($("#submitleavemessage").text() == "添加公告") {
+                $.ajax({
+                    type: 'GET',
+                    url: "/Home/writenotice",
+                    data: { content: $("#leavemessage").val() },
+                    datatype: "json",
+                    success: function (data) {
+                        alert(data);
+                        if (data == "添加成功") {
+                            window.location.reload();
+                        }
+                    },
+                    error: function () {
+                        alert("出错");
+                    }
+                });
+            } else {
+                $.ajax({
+                    type: 'GET',
+                    url: "/Home/addleavemessage",
+                    data: { username: '@ViewBag.username', content: $("#leavemessage").val() },
+                    datatype: "json",
+                    success: function (data) {
+                        alert(data);
+                        if (data == "留言成功") {
+                            closeWindow();
+                        } else
+                            alert("留言失败");
+
+                    },
+                    error: function () {
+                        alert("出错");
+                    }
+                });
+            }
+            $("#submitleavemessage").text("提交留言");
+        });
+
+
+
+        $("#dialog").hide();
+                        @{
+                            int h = ((List<WebBlogSystem.Models.Focus>)ViewBag.focuslist).Count;
+                    }
+        var focusnum = '@h';
+        for (n = 0; n < focusnum; n++) {
+            $("#close" + n).bind("click", { index: n }, cancelclick);
+        }
+        if ('@ViewBag.flag' == "true") {
+            $("#btn_focus").text("取消关注");
+        }
+        function cancelclick(event) {
+            var h = event.data.index;
+            $.ajax({
+                type: 'GET',
+                url: "/Home/deletefocus",
+                data: { username: $("#name"+h).text() },
+                datatype: "json",
+                success: function (data) {
+                    if (data == "取消关注成功")
+                    {
+                        window.location.reload();
+                    }
+                    alert(data);
+                },
+                error: function () {
+                    alert("出错");
+                }
+            });
+        }
+
+
+        $(".close").click(function () {
+
+            $.ajax({
+                type: 'GET',
+                url: "/Home/deletefocus",
+                data: { username: $(".fans_name").val() },
+                datatype: "json",
+                success: function (data) {
+                    if (data == "true") {
+                        alert("成功");
+                    }
+                    if (data == "false") {
+                        alert("失败");
+                    }
+                },
+                error: function () {
+                    alert("出错");
+                }
+            });
+        });
+        if ('@ViewBag.username' == '@Context.User.Identity.Name') {
+            $(".Concern").hide(); $(".close").show();
+        } else {
+            $(".Concern").show(); $(".close").hide();
+        }
+
+        $("#btn_focus").click(function () {
+            if ($("#btn_focus").text() == "关注") {
+                $.ajax({
+                    type: 'GET',
+                    url: "/Home/focususer",
+                    data: { username: '@ViewBag.username' },
+                    datatype: "json",
+                    success: function (data) {
+                        alert(data);
+                        window.location.reload();
+                    },
+                    error: function () {
+                        alert("出错");
+                    }
+                });
+            } else {
+
+                $.ajax({
+                    type: 'GET',
+                    url: "/Home/disfocus",
+                    data: { username: '@ViewBag.username' },
+                    datatype: "json",
+                    success: function (data) {
+                        alert(data);
+                        window.location.reload();
+                    },
+                    error: function () {
+                        alert("出错");
+                    }
+                });
+            }
+
+        });
+    });
+</script> 
+    </head>
+
+    <body>
+        <div id="dialog">
+          <textarea name="a" style="width:600px;height:200px;font-size:20px" id="leavemessage" ></textarea>
+            <button style="width:80px;height:40px;position:absolute; top: 249px; left: 491px;" id="submitleavemessage">提交留言</button>
+             <button style="width:80px;height:40px;position:absolute; top: 252px; left: 22px;" id="close">关闭</button>
+        </div>
+        <div class="BlogerInfo"> 
+            <div class="container"></div>
+            
+            <div class="BlogerPic avatar">
+                <h1 class="writenotice">写公告</h1>
+            <h1  class="BlogerName" style="top:10px" >Username:@ViewBag.username</h1>
+                <img class="" src="@{@ViewBag.imag}" />
+            </div>
+            <div class="BlogerNotic">
+                <h4> @(((WebBlogSystem.Models.Notice)ViewBag.notice).time)</h4>
+                <h2> @(((WebBlogSystem.Models.Notice)ViewBag.notice).content)</h2>
+            </div>
+            <Button class="Concern" id="btn_focus">关注</Button>
+            <Button class="Concern" id="btn_center">留言</Button>
+            <Button class="Concern" id="btn_chat" onclick="javascript:window.location.href='/Home/UserChat?name=@ViewBag.username'">私信</Button>
+        </div>
+        <div class="Content">
+              @foreach (WebBlogSystem.Models.Focus q in (List<WebBlogSystem.Models.Focus>)ViewBag.focuslist)
+              {
+                  int index = (((List<WebBlogSystem.Models.Focus>)ViewBag.focuslist).IndexOf(q));
+                  <div class="fans">
+               <img class="fans_pic" src="ft5_71_story/images/person_2.jpg"/>
+               <a href="#" class="fans_name" id="name@{@index}">@(((List<string>)ViewBag.namelist).ElementAt(index))</a><&nbsp><&nbsp><&nbsp>
+               <a href="#" class="fans_name" id="anothername@{@index}">备注：@q.anothername</a>
+               <p class="close" id="close@{@index}">取消关注</p>
+              </div>
+              }
+
+        </div>     
+    </body>
+     <script type="text/javascript">
+
+         //关闭窗口的方法 
+         function closeWindow() {
+             $("#dialog").hide();
+         }
+         //定义弹出居中窗口的方法 
+         function popCenterWindow() {
+
+             $("#dialog").show();          //并且让 节点（“dialog”） show（）出来
+
+         }
+          </script> 
+</html>

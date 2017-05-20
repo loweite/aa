@@ -1,0 +1,126 @@
+﻿
+<html>
+    <head>     
+        <title>管理员</title>    
+         <script src="~/Scripts/jquery-3.1.1.js"></script>
+        <script src="~/Scripts/jquery-3.1.1.min.js"></script>    
+        <style>
+            * {
+            padding:0;
+            margin:0;
+            font-family: '微软雅黑','Helvetica Neue', Arial, sans-serif
+
+            }
+            body {
+            background-color:#7ac4e9;
+            }
+            .admin {
+            width:70%;
+            height:600px;
+            margin:0px auto;
+            }
+            .title {
+            height:80px;
+            background-color:white; 
+            }
+             .title p{
+                 position:relative;
+                top: 54px;
+                left: 427px;
+                width: 79px;
+            }
+            .search {
+            position:relative;
+                top: 4px;
+                left: 351px;
+            width:200px;
+            height:40px;
+            border-radius:10px;
+            font-size:20px;
+            }
+            .searchbt {
+            position:relative;
+                top: 3px;
+                left: 377px;
+                height: 30px;
+                width: 58px;
+            }
+            .blogs {
+            margin-top:30px;
+            }
+            .blog {
+            height:200px;
+            margin-top:20px;
+            border:1px solid #808080;
+            }
+            .pic {
+            width:100px; 
+            height:100px;
+            border-radius:50%;
+            position:relative;
+                top: 40px;
+                left: 14px;
+            }
+            .blog p {
+            font-size:20px;
+            position:relative;
+                top: -42px;
+                left: 279px;
+                width: 188px;
+            color:#808080;
+            }
+            .delete {
+            position:relative;
+                top: -49px;
+                left: 858px;
+                width: 66px;
+            }
+        </style>
+
+        
+        <script>
+            $(document).ready(function () {
+
+                $(".searchbt").click(function () {
+
+                    window.location.href = "/Blog/SearchBlog/1?name=" + $(".search").val();
+
+                });
+               /* function search(i)
+                {
+                    alert(i);
+                    window.location.href = "/Blog/Index/" + i;
+                }*/
+
+
+            });
+        </script>
+    </head>
+    <body>
+        <div class="admin">
+            <div class="title">
+                <p>全部:</p>
+            </div>
+            <input type="text" class="search" style="border:none" value="@ViewBag.search" />
+            <Button class="searchbt"> 搜索</Button>
+            <div class="blogs">
+                 @foreach (WebBlogSystem.Models.Blog q in (List<WebBlogSystem.Models.Blog>)ViewBag.bloglist)
+                 {
+                     WebBlogSystem.Security.MemberShip member = new WebBlogSystem.Security.MemberShip();
+                     int index = (((List<WebBlogSystem.Models.Blog>)ViewBag.bloglist).IndexOf(q));
+                  <div class="blog" style="border-radius:10px;background-color:white;cursor:pointer" onclick="javascript:window.location.href='/Blog/Index/@q.blogid'" >
+                    <img  src="@{@(member.GetUserImage(member.getUserNameById(q.userid)))}"  style="border-radius:50%" class="pic"/>
+                    <p class="name">@(((List<string>)ViewBag.namelist).ElementAt(index))</p><br />
+                    <p class="name">@q.title</p>
+                </div>
+                 }
+            </div>
+        </div>
+    
+
+    </body>
+
+</html>
+
+
+

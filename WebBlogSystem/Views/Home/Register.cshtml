@@ -1,0 +1,165 @@
+﻿
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>注册</title>
+    <!-- CSS -->
+    <link href="~/Css/reset.css" rel="stylesheet" />
+    <link href="~/Css/registerstyle.css" rel="stylesheet" />
+    <link href="~/Css/supersized.css" rel="stylesheet" />
+        <script src="~/Scripts/jquery-3.1.1.js"></script>
+        <script src="~/Scripts/jquery-3.1.1.min.js"></script>
+    <style>
+        body {
+            background: url(../assets/img/backgrounds/1.jpg) no-repeat;
+            background-size: cover;
+            font-family: 'PT Sans', Helvetica, Arial, sans-serif;
+            text-align: center;
+            color: #fff;
+        }
+    </style>
+        <script>
+            $(document).ready(function () {
+                $(function () {
+                    $("#file1").on("change", function () {
+                        var file = this.files[0];
+                        if (this.files && file) {
+                            var reader = new FileReader();
+                            reader.onload = function (e) {
+                                $('#img1').attr('src', e.target.result);
+
+
+                            }
+                            reader.readAsDataURL(file);
+                        }
+
+                    });
+
+                });
+                
+                //jquery验证邮箱 
+                function checkSubmitEmail() { 
+                    if ($(".email").val() == "") {
+                        //$("#confirmMsg").html("<font color='red'>邮箱地址不能为空！</font>"); 
+                        alert("邮箱不能为空!") 
+                        $(".email").focus();
+                        return false; 
+                    } 
+                    if (!$(".email").val().match(/^\w+((-\w+)|(\.\w+))*\@@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/)) {
+                        alert("邮箱格式不正确"); 
+                        //$("#confirmMsg").html("<font color='red'>邮箱格式不正确！请重新输入！</font>"); 
+                        $(".email").focus();
+                        return false; 
+                    } 
+                    return true; 
+                    } 
+                
+
+                //jquery验证手机号码 
+                function checkSubmitMobil() { 
+                    if ($(".tel").val() == "") {
+                        alert("手机号码不能为空！"); 
+                        //$("#moileMsg").html("<font color='red'>手机号码不能为空！</font>"); 
+                        $(".tel").focus();
+                        return false; 
+                    } 
+
+                    if (!$(".tel").val().match(/^(((13[0-9]{1})|159|153)+\d{8})$/)) {
+                        alert("手机号码格式不正确！"); 
+                        //$("#moileMsg").html("<font color='red'>手机号码格式不正确！请重新输入！</font>"); 
+                        $(".tel").focus();
+                        return false; 
+                    } 
+                    return true; 
+                } 
+
+                $("#register_subit").click(function () {
+                    alert("aaa");
+                    if ($(".username").val() == "")
+                    {
+                        alert("用户名不能为空");
+                    } else if ($(".password").val() == "")
+                    {
+                        alert("密码不能为空");
+                    } else if ($(".password").val() != $(".confirmpassword").val())
+                    {
+                        alert("确认密码与密码不同");
+                    
+                    }else if ($(".email").val() == "") {
+                        alert("邮箱不能为空");
+                    } else if ($(".tel").val() == "") {
+                        alert("电话不能为空");
+                    } else if ($(".tip").val() == "") {
+                        alert("提示不能为空");
+                    } else if ($(".instruction").val() == "") {
+                        alert("简介不能为空");
+                    } else if ($("#img1").attr("src") == "")
+                    {
+                        alert("请选择头像");
+                    } else if (!checkSubmitMobil())
+                    {
+                    } else if (!checkSubmitEmail())
+                    {
+                    
+                    }
+                    else {
+                        alert("ajax");
+                        $.ajax({
+                            type: 'POST',
+                            url: "/Home/registerpost",
+                            data: { username: $(".username").val(), image: $("#img1").attr("src"), password: $(".password").val(), email: $(".email").val(), phone: $(".tel").val(), tip: $(".tip").val(), instruction: $(".instruction").val() },
+                            datatype: "json",
+                            success: function (data) {
+                                alert(data);
+                                if (data == "注册成功") {
+                                    window.location.href = "/Home/Index";
+                                }
+                            },
+                            error: function () {
+                                alert("出错");
+                            }
+                        });
+
+                    }
+                   
+
+
+                });
+
+
+
+            });
+        </script>
+</head>
+
+<body>
+
+    <div class="page-container" id="header">
+        <h1>注册</h1>
+        <form action="" method="post" class="form">
+            <img src="" id="img1" style="width:100px;height:100px;border-radius:50%" />
+            <input type="text" name="username" class="username" placeholder="用户名" autocomplete="off">
+            <input type="password" name="password" class="password" placeholder="密码" autocomplete="off">
+            <input type="password" name="confirmpassword" class="confirmpassword" placeholder="确认密码" autocomplete="off">
+            <input type="email" name="email" class="email" placeholder="邮箱" autocomplete="off">
+            <input type="tel" name="tel" class="tel" placeholder="电话" autocomplete="off">
+            <input type="text" name="tip" class="tip" placeholder="提示" autocomplete="off">
+            <input type="text" name="instruction" class="instruction" placeholder="介绍" autocomplete="off">
+            <input id="file1" type="file" />
+            <button type="button" id="register_subit">提交</button>
+            <div class="error"><span>+</span></div>
+        </form>
+    </div>
+
+    <!-- Javascript -->
+    <script src="~/Scripts/jquery-1.8.2.min.js"></script>
+    <script src="~/Scripts/errorscripts.js"></script>
+</body>
+
+</html>
+
+
+
+
+

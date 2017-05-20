@@ -1,0 +1,296 @@
+﻿@using System.Web.Security;
+@using WebBlogSystem.Models;
+@using System.Web.Mvc;
+<html>
+    <head>
+        <style>
+            * {
+                padding: 0;
+                margin: 0;
+                font-family: '微软雅黑','Helvetica Neue', Arial, sans-serif;
+            }
+
+            body {
+                background-color: #7ac4e9;
+            }
+
+            .admin {
+                width: 70%;
+                height: 600px;
+                margin: 0px auto;
+            }
+
+            .title {
+                height: 80px;
+                background-color: white;
+            }
+
+                .title p {
+                    position: relative;
+                    top: 54px;
+                    left: 427px;
+                    width: 79px;
+                }
+          
+            .search {
+                position: relative;
+                top: 4px;
+                left: 80px;
+                width: 200px;
+                height: 40px;
+                border-radius: 10px;
+                font-size: 20px;
+            }
+
+            .searchbt {
+                position: relative;
+                top: 3px;
+                left: 100px;
+                height: 30px;
+                width: 58px;
+            }
+
+            .blogs {
+                margin-top: 30px;
+            }
+
+            .blog {
+                height: 200px;
+                margin-top: 20px;
+                border: 1px solid #808080;
+            }
+
+            .pic {
+                width: 100px;
+                height: 100px;
+                border-radius: 50%;
+                position: relative;
+                top: 40px;
+                left: 14px;
+            }
+
+            .blog p {
+                font-size: 20px;
+                position: relative;
+                top: -42px;
+                left: 279px;
+                width: 188px;
+                color: #808080;
+            }
+
+            .delete {
+                position: relative;
+                top: -49px;
+                left: 858px;
+                width: 66px;
+            }
+        </style>
+        <title></title>
+        <script src="~/Scripts/jquery-1.8.2.js" type="text/javascript"></script>
+        <script src="~/Scripts/jquery-1.8.3.js" type="text/javascript"></script>
+        <script src="~/Scripts/jquery-ui-1.8.24.js" type="text/javascript"></script>
+        <script>
+           
+            $(document).ready(function () {
+              
+                $(".blogs input").live("click", function () {
+                   
+                    $.ajax({
+                        type: 'GET',
+                        url: "/Home/Recommend",
+                        data: { blogid: $(this).attr("id") },
+                        datatype: "json",
+                        success: function (data) {
+                            if (data == "") {
+                                alert("You have already recommend!");
+                            }
+                            else
+                            {
+                                alert("success");
+                            }
+                           
+                        },
+                        error: function () {
+
+                            alert("出错");
+                        }
+                    });
+
+                });
+                $(".user button[name='delete']").live("click", function () {
+                    alert($(this).attr("id"));
+
+
+                    if (confirm("你确定要删除user吗？")) {
+                        $.ajax({
+                            type: 'GET',
+                            url: "/Home/DeleteUser",
+                            data: { userid: $(this).attr("id") },
+                            datatype: "json",
+                            success: function (data) {
+                                alert("成功");
+                                $.ajax({
+                                    type: 'POST',
+                                    url: "/Home/Delete",
+                                    data: { username: $("#username1").val() },
+                                    datatype: "json",
+                                    success: function (data) {
+
+                                        $("#div1").html(data);
+                                        $(".user p").css({ "font-size": "20px", "position": "relative", "top": " -5px", "left": "279px", "width": "188px", "color": "#808080" });
+                                        $(".user img").css({ "width": "100px", "height": "100px", "border-radius": "50%", "position": "relative", "top": "40px", "left": " 14px" });
+                                        $(".user input").css({ "position": "relative", "top": " -19px", "left": "792px", "width": "66px" });
+
+                                    },
+                                    error: function () {
+                                        alert("出错");
+                                    }
+                                });
+                            },
+                            error: function () {
+
+                                alert("出错");
+                            }
+                        });
+                    }
+                    else {
+
+                    }
+                });
+                $(".blogs button[name='bb']").live("click", function () {
+                    //alert($(this).attr("id"));
+                    if (confirm("你确定要删除blog吗？")) {
+                        $.ajax({
+                            type: 'GET',
+                            url: "/Home/DeleteBlog",
+                            data: { blogid: $(this).attr("id") },
+                            datatype: "json",
+                            success: function (data) {
+                                alert("成功");
+                                $.ajax({
+                                    type: 'POST',
+                                    url: "/Home/Search",
+                                    data: { username: $("#name").val() },
+                                    datatype: "json",
+                                    success: function (data) {
+
+                                        $("#div1").html(data);
+                                        $(".blogs p").css({ "font-size": "20px", "position": "relative", "top": " -5px", "left": "279px", "width": "188px", "color": "#808080" });
+                                        $(".blogs img").css({ "width": "100px", "height": "100px", "border-radius": "50%", "position": "relative", "top": "40px", "left": " 14px" });
+                                        $(".blogs input").css({ "position": "relative", "top": " -19px", "left": "792px", "width": "66px" });
+
+                                    },
+                                    error: function () {
+                                        alert("出错");
+                                    }
+                                });
+                            },
+                            error: function () {
+
+                                alert("出错");
+                            }
+                        });
+                    }
+                    else {
+                       
+                    }                 
+                });
+                $("#delete").click(function () {
+                    $.ajax({
+                        type: 'POST',
+                        url: "/Home/Delete",
+                        data: { username: $("#username1").val() },
+                        datatype: "json",
+                        success: function (data) {
+
+                            $("#div1").html(data);
+                            $(".user p").css({ "font-size": "20px", "position": "relative", "top": " -5px", "left": "279px", "width": "188px", "color": "#808080" });
+                            $(".user img").css({ "width": "100px", "height": "100px", "border-radius": "50%", "position": "relative", "top": "40px", "left": " 14px" });
+                            $(".user input").css({ "position": "relative", "top": " -19px", "left": "792px", "width": "66px" });
+
+                        },
+                        error: function () {
+                            alert("出错");
+                        }
+                    });
+                    $("#username1").val("");
+                });
+                $("#change").click(function () {
+                    $.ajax({
+                        type: 'GET',
+                        url: "/Home/Changeuserinfo",
+                        data: { username: $("#username").val() },
+                        datatype: "json",
+                        success: function (data) {
+                            if (data != 0) {
+                                alert("成功");
+                             window.location.href = "/Admin/UserInfo/"+data+"";
+                            }
+                            if (data == 0) {
+                                alert("不存在");
+                            }
+                        },
+                        error: function (data) {
+                            alert(data);
+                            alert("出错");
+                        }
+                    });
+                    $("#username").val("");
+                });
+               
+                $("#search").click(function () {
+                    
+                    $.ajax({
+                        type: 'POST',
+                        url: "/Home/Search",
+                        data: { username: $("#name").val() },
+                        datatype: "json",
+                        success: function (data) {
+                          
+                            $("#div1").html(data);
+                            $(".blogs p").css({"font-size": "20px","position": "relative","top":" -50px","left": "279px", "width": "188px","color": "#808080"});
+                            $(".blogs img").css({"width": "100px","height": "100px","border-radius": "50%","position": "relative","top": "40px","left":" 14px"});
+                            $(".blogs input").css( {"position": "relative","top":" -19px","left": "792px","width": "66px"});
+                            
+                        },
+                        error: function () {
+                            alert("出错");
+                        }
+                    });
+                 //   window.location.href = "Index";
+                    $("#name").val("");
+
+                });
+                
+
+            });
+        </script>
+    </head>
+    <body >
+        <div class="admin">
+            <div class="title" style="border-bottom-left-radius:10px;border-bottom-right-radius:10px">
+                <p>管理员:</p>
+            </div>
+            <input id="username" type="text" style="border:none;position: relative;top: 4px;left: 0px;width: 200px;height: 40px;border-radius: 10px;font-size: 20px;" placeholder="enter the username which you want to change" />
+            <input id="change" type="button" style="cursor:pointer;border:none;border-radius:10px; position: relative;top: 3px;left: 20px;height: 30px; width: 58px;" value="change" />
+
+            <input type="text" style="border:none" class="search" id="name" placeholder="enter the username which you want to search" />
+            <button class="searchbt" style="cursor:pointer; border:none;border-radius:10px" id="search"> 搜索</button>
+
+            <input id="username1" type="text" style="border:none;position: relative;top: 4px;left: 140px;width: 200px;height: 40px;border-radius: 10px;font-size: 20px;" placeholder="enter the username which you want to delete" />
+            <input id="delete" type="button" style="cursor:pointer;border:none;border-radius:10px; position: relative;top: 3px;left: 160px;height: 30px; width: 58px;" value="delete" />
+
+            <div class="blogs" id="div1">
+                
+            </div>
+        </div>
+ <div id="a"></div>
+        <h1>@Context.User.Identity.Name</h1>
+        
+       
+        
+     
+      <br />
+    </body>
+
+</html>

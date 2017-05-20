@@ -1,0 +1,221 @@
+﻿
+<html>
+    <head>     
+        <title>私信</title>    
+        <script src="~/Scripts/jquery-3.1.1.js"></script>
+        <script src="~/Scripts/jquery-3.1.1.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                var chatusername = '@ViewBag.targetuser';
+                $("#confirm").click(function () {
+                    $("#appenddiv").append("<div class='user_letter'>@(Context.User.Identity.Name)(@DateTime.Now):<br/>" + $("#content").val() + "</div>");
+                    $.ajax({
+                        type: 'GET',
+                        url: "/Home/addchat",
+                        data: { username: chatusername, content: $("#content").val() },
+                        datatype: "json",
+                        success: function (data) {
+                            alert(data);
+                        },
+                        error: function () {
+                            alert("出错");
+                        }
+                    });
+
+
+                });
+
+                
+                @{ 
+                    int h = ((List<string>)ViewBag.namelist).Count;
+                    }
+                var focusnum = '@h';
+
+                for (n = 0; n < focusnum; n++) {
+                    $("#user" + n).bind("click", { index: n }, anotherclick);
+                }
+                function anotherclick(event) {
+                    var h = event.data.index;
+                    $.ajax({
+                        type: 'GET',
+                        url: "/Home/selectuserchat",
+                        data: { username: $("#user" + h + " h2").text() },
+                        datatype: "json",
+                        success: function (data) {
+                            // alert(data);
+                            $(".content_right").html(data);
+                            chatusername = $("#user" + h + " h2").text();
+                        },
+                        error: function () {
+                            alert("出错");
+                        }
+                    })
+                }
+
+                $("#deleteevaluation").click(function () {
+                    $(".content_right").html("");
+                    $.ajax({
+                        type: 'GET',
+                        url: "/Home/deletechat",
+                        data: { username: chatusername},
+                        datatype: "json",
+                        success: function (data) {
+                            alert(data);
+                        },
+                        error: function () {
+                            alert("出错");
+                        }
+                    });
+
+                });
+
+
+            });
+        </script>
+        <style>
+            * {
+            padding:0;
+            margin:0;
+            font-family: '微软雅黑','Helvetica Neue', Arial, sans-serif
+
+            }
+            body {
+            background-color:#7ac4e9;
+            }
+            .letter {
+            width:70%;
+            height:600px;
+            margin:0px auto;
+            }
+            .title {
+            height:80px;
+            background-color:white; 
+            }
+            .title p{
+               position:relative;
+                top: 29px;
+                left: 65px;
+                width: 112px;
+                height: 24px;
+                text-shadow:2px 2px 2px #808080;
+                font-size:20px;
+                font-weight:bold;
+                color:#808080;
+            }
+            .content_left {
+            float:left;
+            width:28%;
+            height:500px;
+            background-color:white;
+            margin-top:20px;
+            overflow-y:scroll;
+            }
+            .user {
+            height:90px;
+            border:1px solid #d0cfcf;
+            position:relative;
+            }
+            .user img{
+            width:70px;
+            height:70px;
+            border-radius:50%;
+            position:relative;
+                top: 9px;
+                left: 17px;
+            }
+            .user h2{
+            position:absolute;
+            font-size:15px;
+            text-shadow:2px 2px 2px #808080;
+
+            }
+            .content_right {
+                float:right;
+             width:68%;
+            height:500px;
+            background-color:white;
+            margin-top:20px;
+            overflow-y:scroll;
+            }
+            .user_letter {
+            width:68%;
+            border-radius:10px;
+            margin-top:10px;
+            word-wrap:break-word;
+            font-size:20px;
+            font-weight:800;
+            color:#be7676;
+            }
+             #confirm {
+                 cursor:pointer;
+                width:100px;
+                height:20px;
+                background-color:white;
+                border:none;
+                border-radius:10px;
+            }
+                #confirm:hover {
+                 
+                background-color:darkcyan;
+                transition-delay:0s;
+                transition-duration:0.5s;
+                transition-property:all;
+                }          
+             #deleteevaluation {
+                width:100px;
+                 cursor:pointer;
+                height:20px;
+                background-color:white;
+                border:none;
+                border-radius:10px;
+            }
+                #deleteevaluation:hover {
+                background-color:darkcyan;
+                transition-delay:0s;
+                transition-duration:0.5s;
+                transition-property:all;
+                }  
+        </style>
+    </head>
+
+    <body>
+        <div class="letter">
+            <div class="title">
+                <p>'@Context.User.Identity.Name'的私信：</p>
+            </div>
+                @{
+                    WebBlogSystem.Security.MemberShip member = new WebBlogSystem.Security.MemberShip();
+                    }
+            <div class="content_left" style="border-radius:10px;overflow:hidden">
+                @foreach (string a in (List<string>)ViewBag.namelist)
+                {
+                    int index = ((List<string>)ViewBag.namelist).IndexOf(a);
+                    <div class="user"  id="user@{@index}">
+                    <img  src="@{@member.GetUserImage(a)}"/>
+                    <h2 style="width: 127px; top: 31px; left: 111px; height: 22px;">@a</h2>
+                </div>
+                }
+            </div>
+            <div class="content_right" style="border-radius:10px;overflow:hidden">
+                @{
+                    if(ViewBag.chatlist!=null)
+                    {  foreach (WebBlogSystem.Models.Chat q in (List<WebBlogSystem.Models.Chat>)ViewBag.chatlist)
+                { <div class="user_letter" >     @(member.getUserNameById(q.userid1))(@q.time):<br/>@q.content
+                </div> 
+                }}
+                    
+                    }
+                <div id="appenddiv"></div>
+            </div>
+               &nbsp&nbsp&nbsp&nbsp  <input id="content" type="text" style="border-radius:4px"  placeholder="" />
+                 <input id="confirm" type="button"  value="Confirm" />
+                 <input id="deleteevaluation" type="button" value="Clear" />
+        </div>
+    
+
+    </body>
+
+</html>
+
+
+

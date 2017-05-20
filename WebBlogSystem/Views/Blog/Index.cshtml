@@ -1,0 +1,280 @@
+﻿@model WebBlogSystem.Models.Blog
+<html>
+    <head>
+        <title>博文题目</title>
+        <script src="~/Scripts/jquery-3.1.1.min.js"></script>
+        <script src="~/Scripts/jquery-3.1.1.js"></script>
+        <script charset="utf-8" src="/editor/kindeditor.js"></script>
+        <script src="~/editor/kindeditor-all-min.js"></script>
+        <script src="~/editor/kindeditor-all.js"></script>
+        <script src="~/editor/kindeditor-min.js"></script>
+        <script charset="utf-8" src="/editor/lang/zh-CN.js"></script>
+        <script src="~/Scripts/jquery-1.8.2.js" type="text/javascript"></script>
+        <script src="~/Scripts/jquery-1.8.3.js" type="text/javascript"></script>
+        <script src="~/Scripts/jquery-ui-1.8.24.js" type="text/javascript"></script>
+        <link href="~/Css/ReadBlog.css" rel="stylesheet" />
+        <script>
+            KindEditor.ready(function (K) {
+                //  var editor = K.create('#editor_id');
+
+                var options = {
+                    cssPath: '/css/index.css',
+                    filterMode: false,
+                    readonlyMode: true,
+                    resizeType: 0,
+                    items: [""]
+                };
+                var editor = K.create('textarea[name="content"]', options);
+
+                html = editor.html();
+
+                // 同步数据后可以直接取得textarea的value
+                editor.sync();
+                html = document.getElementById('editor_id').value; // 原生API
+                html = K('#editor_id').val(); // KindEditor Node API
+                html = $('#editor_id').val(); // jQuery
+
+                // 设置HTML内容
+
+                /*    K('input[name=readonly]').click(function () {
+                        editor.readonly();
+                    });
+                  */
+
+            });
+
+            $(document).ready(function () {
+
+                var currentuser = '@Context.User.Identity.Name';
+                var username = '@ViewBag.username';
+                if (currentuser == username) {
+                    alert("hide");
+                    $(".makecomment").hide();
+                } else {
+                    $("#deleteevaluation").hide();
+                }
+          $(".submit").click(function () {
+                    $.ajax({
+                        type: 'GET',
+                        url: "/Blog/evaluaeblog",
+                        data: { evaluation: $(".area").val(), username: '@Context.User.Identity.Name',blogid:'@Model.blogid' },
+                        datatype: "json",
+                        success: function (data) {
+                            alert(data);
+                            if (data == "评论成功")
+                            {
+                                window.location.reload();
+                            }
+                        },
+                        error: function () {
+                            alert("出错");
+                        }
+                    });
+
+                });
+
+                if ('@ViewBag.flag' == "true") {
+                    $("#collect").val("取消收藏");
+                }
+                if ('@ViewBag.isgivegood' == "true") {
+                    $("#givegood").val("已点赞");
+                }
+                @{
+                    int h = ((List<WebBlogSystem.Models.Evaluation>)ViewBag.elist).Count;
+                    WebBlogSystem.Security.MemberShip member = new WebBlogSystem.Security.MemberShip();
+                    }
+                var evanum = '@h';
+                for (n = 0; n < evanum; n++) {
+                    $("#deleteevaluation" + n).bind("click", { index: n }, deleteclick);
+                    if ($("#comment_name" + n).text() != '@Context.User.Identity.Name'&&'@ViewBag.username'!='@Context.User.Identity.Name')
+                    {
+                        $("#deleteevaluation" + n).hide();
+                    }
+                }
+                function deleteclick(event) {
+                    var h = event.data.index;
+                    $.ajax({
+                        type: 'GET',
+                        url: "/Blog/deleteevaluation",
+                        data: { eid:$("#deleteevaluation" + h).attr("class") },
+                        datatype: "json",
+                        success: function (data) {
+                            alert(data);
+                            if (data == "删除成功")
+                                window.location.reload();
+                        },
+                        error: function () {
+                            alert("删除失败");
+                        }
+                    });
+
+                }
+                if ('@(member.getUserNameById(Model.userid).Trim())' == '@Context.User.Identity.Name')
+                {
+                    $("#collect").hide();
+                    $("#givegood").hide();
+                }
+                
+
+                $("#collect").click(function () {
+                    if ($("#collect").text() == "收藏") {
+
+                        $.ajax({
+                            type: 'GET',
+                            url: "/Blog/collectblog",
+                            data: { blogid: '@Model.blogid' },
+                            datatype: "json",
+                            success: function (data) {
+                                alert(data);
+                                if (data == "收藏成功")
+                                {
+                                    $("#collect").text("取消收藏");
+                                    $("#collectnum").text(parseInt($("#collectnum").text()) + 1);
+                                }
+                            },
+                            error: function () {
+                                alert("出错");
+                            }
+                        });
+
+                    } else {
+
+                        $.ajax({
+                            type: 'GET',
+                            url: "/Blog/discollectblog",
+                            data: { blogid: '@Model.blogid' },
+                            datatype: "json",
+                            success: function (data) {
+                                alert(data);
+                                $("#collect").text("收藏");
+                                $("#collectnum").text(parseInt($("#collectnum").text()) - 1);
+                            },
+                            error: function () {
+                                alert("出错");
+                            }
+                        });
+
+                    }
+
+                });
+                if ('@ViewBag.username' != '@Context.User.Identity.Name')
+                {
+                    $("#editeblog").hide();
+                }
+                $("#givegood").click(function () {
+                    if ($("#givegood").text() == "点赞") {
+
+                        $.ajax({
+                            type: 'GET',
+                            url: "/Blog/givegood",
+                            data: { blogid: '@Model.blogid' },
+                            datatype: "json",
+                            success: function (data) {
+                                alert(data);
+                                if (data == "点赞成功") {
+                                    $("#givegood").text("已点赞");
+                                    $("#givegoodnum").text(parseInt($("#givegoodnum").text()) + 1);
+                                }
+                            },
+                            error: function () {
+                                alert("出错");
+                            }
+                        });
+
+                    } else {
+                        $.ajax({
+                            type: 'GET',
+                            url: "/Blog/cancelgivegood",
+                            data: { blogid: '@Model.blogid' },
+                            datatype: "json",
+                            success: function (data) {
+                                alert(data);
+                                $("#givegood").text("点赞");
+                                $("#givegoodnum").text(parseInt($("#givegoodnum").text()) - 1);
+                            },
+                            error: function () {
+                                alert("出错");
+                            }
+                        });
+
+                    }
+
+                });
+
+                $("#givemoney").click(function () {
+                        $.ajax({
+                            type: 'GET',
+                            url: "/Blog/giviemoney",
+                            data: { username: '@(member.getUserNameById(Model.userid))',money:prompt("请输入你要打赏金额：", "0"),blogid:'@Model.blogid'},
+                            datatype: "json",
+                            success: function (data) {
+                                alert(data);
+                                if (data == "打赏成功") {
+                                    $("#giviemoney").text("已打赏");
+                                    $("#givemoneynum").text(parseInt($("#givemoneynum").text()) + 1);
+                                }
+                            },
+                            error: function () {
+                                alert("出错");
+                            }
+                        });
+
+
+                });
+
+
+            });
+        </script>
+    </head>
+    <body>
+        <div class="overlay"></div>
+        <div class="page">
+        <div class="page-title image-light">
+				<img src="@{@(member.GetUserImage(member.getUserNameById(Model.userid)))}" style="border-radius:50%; -webkit-animation: downloadButton 2.5s infinite;
+            animation: downloadButton 2.5s infinite;
+            -webkit-transition: none;
+            transition: none"/>
+                <h2 id="blogername" onclick="javascript:window.location.href='/Home/UserInfo/?name=@ViewBag.username'" >@ViewBag.username</h2>
+                <h2 id="editeblog" onclick="javascript:window.location.href='/Blog/EditBlog/@Model.blogid'" >编辑博客</h2>
+				<span>@Model.updatetime</span>
+				<h2>@Model.title</h2>
+            <div id="bloginfo">
+				打赏数：<h2 id="givemoneynum">@Model.costnum</h2>
+				点赞数：<h2 id="givegoodnum">@(((List<int>)ViewBag.bloginfo).ElementAt(1))</h2>
+				收藏数：<h2 id="collectnum">@(((List<int>)ViewBag.bloginfo).ElementAt(0))</h2>
+			</div>   
+			</div>   
+        </div>
+
+        <div class="content">
+            <div class="content_blog">
+                    <textarea id="editor_id" name="content" style="width:100%;height:300px;">@Server.HtmlDecode(Model.content)</textarea>
+                 </div>
+                 <button id="collect" style="position:absolute;top: 700px;left: 1250px;width: 67px; height: 28px;">收藏</button>
+                 <button id="givegood" style="position:absolute;top: 750px;left: 1250px;width: 67px; height: 28px;">点赞</button>
+                 <button id="givemoney" style="position:absolute;top: 800px;left: 1250px;width: 67px; height: 28px;">打赏</button>
+
+             <div class="comment_blog"> 
+                  @foreach (WebBlogSystem.Models.Evaluation q in (List<WebBlogSystem.Models.Evaluation>)ViewBag.elist)
+                  {
+                      int index = (((List<WebBlogSystem.Models.Evaluation>)ViewBag.elist).IndexOf(q));
+                       <script type="text/javascript">
+                            var i='@index';
+                         </script>
+                      <div class="comment"  >
+                          <div class="comment_pic"></div>
+                          <div class="comment_name" id="comment_name@{@index}">@(((List<string>)ViewBag.usernamelist).ElementAt(index))</div>
+                          <div class="comment_time">@q.time</div>
+                          <div class="comment_content">@q.content</div>
+                          <input id="deleteevaluation@{@index}" class="@q.Id" type="button" value="delete" />
+                      </div>
+                  }
+             </div>
+             <div class="makecomment">
+                 <textarea class="area"></textarea>
+                 <button class="submit">评论</button>
+             </div>
+         </div>
+      
+    </body>
+</html>
